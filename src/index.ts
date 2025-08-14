@@ -4,6 +4,7 @@ import path from "path";
 import { SocketIoServer } from "./SocketIoServer";
 import router from "./routes/index";
 import cookieParser from "cookie-parser";
+import { MessageHandler } from "./MessageHandler";
 
 const app = express();
 const httpServer = createServer(app);
@@ -20,4 +21,7 @@ httpServer.listen(app.get("port"), () => {
   console.log(`Server on http://localhost:${app.get("port")}`);
 });
 
-io.start();
+io.start((socket) => {
+  const messageHandler = new MessageHandler(io.io);
+  messageHandler.message(socket);
+});
