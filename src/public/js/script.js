@@ -11,21 +11,18 @@ const handleMessage = () => {
   }
 }
 
-const sendMessage = async () => {
-  const { value } = await cookieStore.get("username")
-  socket.emit("message", {
-    username: value,
-    message: handleMessage().getMessage()
-  });
+const sendMessage = () => {
+  socket.emit("message", handleMessage().getMessage());
+  handleMessage().clearMessage();
 }
 
-sendButton.addEventListener("click", async () => await sendMessage())
-messageInput.addEventListener("keypress", async (e) => {
-  if (e.key === "Enter") await sendMessage()
+sendButton.addEventListener("click", sendMessage)
+messageInput.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") sendMessage()
 })
 
 socket.on("message", (ioMessage) => {
-  const messageMarkup = `
+  const messageMarkup = document.createRange().createContextualFragment(/*html*/`
     <div class="message">
       <div class="image-container">
         <img src="/images/michi.jpeg" alt="michi">
@@ -38,8 +35,6 @@ socket.on("message", (ioMessage) => {
         <p>${ioMessage.message}</p>
       </div>
     </div>
-  `
-  allMessages.innerHTML += messageMarkup;
-
-  handleMessage().clearMessage();
+  `)
+  allMessages.append(messageMarkup);
 });

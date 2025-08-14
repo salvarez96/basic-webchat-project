@@ -14,8 +14,11 @@ export class MessageHandler {
     this.io = io;
   }
   public message(socket: Socket) {
-    socket.on("message", (ioMessage: IoMessage) => {
-      this.io.emit("message", ioMessage);
+    const cookie = socket.handshake.headers.cookie;
+    const username = (cookie as string).split("=")[1];
+
+    socket.on("message", (message: string) => {
+      this.io.emit("message", { username, message });
     });
   }
 }
